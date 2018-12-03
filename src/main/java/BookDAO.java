@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.ArrayList;
 
 public class BookDAO {
 
@@ -12,14 +13,14 @@ public class BookDAO {
     }
 
 
-    public ResultSet showAll() throws SQLException {
+    public ArrayList showAll() throws SQLException {
         final String insert = "Select * from books";
         PreparedStatement statement = connection.prepareStatement(insert);
-        return statement.executeQuery();
+        return setToList(statement.executeQuery());
     }
 
 
-    public ResultSet findBook(String znacznik, String wyraz) throws SQLException {
+    public ArrayList findBook(String znacznik, String wyraz) throws SQLException {
         String find = null;
 
         if ("1".equals(znacznik)) {
@@ -33,7 +34,7 @@ public class BookDAO {
         PreparedStatement statement = connection.prepareStatement(find1);
         statement.setString(1, "%" + wyraz + "%");
         System.out.println(statement.toString());
-        return statement.executeQuery();
+        return setToList(statement.executeQuery());
     }
 
 
@@ -55,5 +56,13 @@ public class BookDAO {
         return statement.executeUpdate();
     }
 
+    private ArrayList setToList (ResultSet res) throws SQLException {
+    ArrayList<Book> lista = new ArrayList<Book>();
 
+    while(res.next()){
+        Book ksiazka = new Book(res.getInt("id"),  res.getString("title"),res.getString("author"), res.getInt("year"), res.getInt("isbn"));
+        lista.add(ksiazka);
+    }
+    return lista;
+    }
 }
